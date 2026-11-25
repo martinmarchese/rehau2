@@ -19,3 +19,4 @@ export const KANBAN_STAGES: {
   { id: 6, name: 'YES / NO', department: 'Customers', accent: 'anthracite' },
   { id: 7, name: 'HR / FIN', department: 'Controlling', accent: 'anthracite' }
 ];
+
