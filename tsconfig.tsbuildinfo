@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/components/partblueprintsvg.tsx","./src/data/kanbanstages.ts","./src/data/workflowdata.ts"],"version":"5.7.3"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/components/partblueprintsvg.tsx","./src/data/i18n.ts","./src/data/kanbanstages.ts","./src/data/workflowdata.ts"],"version":"5.7.3"}

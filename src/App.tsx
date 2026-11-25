@@ -1,18 +1,17 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   INITIAL_OPPORTUNITIES,
   Opportunity,
   StageId,
-  Department,
-  FollowUpAction
+  Department
 } from './data/workflowData';
 import { KANBAN_STAGES } from './data/kanbanStages';
+import { Language, TRANSLATIONS, STAGE_NAMES, DEPT_NAMES } from './data/i18n';
 import { PartBlueprintSvg } from './components/PartBlueprintSvg';
 import {
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  Clock,
   Copy,
   Database,
   FileText,
@@ -23,10 +22,12 @@ import {
   ChevronRight,
   Printer,
   Check,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 
 export function App() {
+  const [lang, setLang] = useState<Language>('es');
   const [opportunities, setOpportunities] = useState<Opportunity[]>(INITIAL_OPPORTUNITIES);
   const [selectedOppId, setSelectedOppId] = useState<string | null>(null);
   const [activeDeptFilter, setActiveDeptFilter] = useState<Department | 'ALL'>('ALL');
@@ -36,6 +37,12 @@ export function App() {
   const [copiedRenta, setCopiedRenta] = useState<boolean>(false);
   const [draggedOppId, setDraggedOppId] = useState<string | null>(null);
   const [dragOverStageId, setDragOverStageId] = useState<StageId | null>(null);
+
+  const t = TRANSLATIONS[lang];
+
+  useEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   // Native <dialog> refs
   const detailDialogRef = useRef<HTMLDialogElement>(null);
@@ -112,6 +119,7 @@ export function App() {
 
   const moveOppToStage = (oppId: string, targetStage: StageId) => {
     const stageDef = KANBAN_STAGES.find((s) => s.id === targetStage);
+    const localizedStageName = STAGE_NAMES[lang][targetStage];
     updateOppById(oppId, (opp) => {
       if (opp.currentStage === targetStage) return opp;
       return {
@@ -125,7 +133,7 @@ export function App() {
             department: stageDef?.department || 'SALES Department',
             stageId: targetStage,
             actionType: 'Aprobación',
-            description: `Movido a ${targetStage}. ${stageDef?.name}`,
+            description: `${t.toastMovedTo} ${targetStage}. ${localizedStageName}`,
             completed: true
           },
           ...opp.actions
@@ -133,7 +141,7 @@ export function App() {
       };
     });
     setActiveModalTab(targetStage);
-    showToast(`Oportunidad movida a ${targetStage}. ${stageDef?.name}`);
+    showToast(`${t.toastMovedTo} ${targetStage}. ${localizedStageName}`);
   };
 
   // Filtered opportunities
@@ -153,17 +161,17 @@ export function App() {
     const m = calculateRentaMetrics(opp);
     const tsv = [
       ['REHAU RENTA', opp.code],
-      ['Cliente', opp.clientName],
-      ['Proyecto', opp.title],
+      ['Client', opp.clientName],
+      ['Project', opp.title],
       ['SAP CIRCA', opp.circa.sapCircaCode],
       ['Transfer Price (USD/u)', m.transferPrice.toFixed(2)],
-      ['Inversión Matriz (USD)', opp.circa.toolingMatrixCostUsd.toString()],
-      ['Inversión Maquinaria (USD)', opp.circa.machineryInvestmentUsd.toString()],
-      ['CAPEX Total (USD)', m.totalCapex.toString()],
-      ['Precio Venta (USD/u)', m.sellingPrice.toFixed(2)],
-      ['Volumen Anual (u)', m.annualQty.toString()],
-      ['Venta Anual (USD)', m.annualRevenueUsd.toFixed(2)],
-      ['Margen Bruto (%)', `${m.grossMarginPercent.toFixed(1)}%`],
+      ['Tooling Investment (USD)', opp.circa.toolingMatrixCostUsd.toString()],
+      ['Machinery Investment (USD)', opp.circa.machineryInvestmentUsd.toString()],
+      ['Total CAPEX (USD)', m.totalCapex.toString()],
+      ['Selling Price (USD/u)', m.sellingPrice.toFixed(2)],
+      ['Annual Volume (u)', m.annualQty.toString()],
+      ['Annual Sales (USD)', m.annualRevenueUsd.toFixed(2)],
+      ['Gross Margin (%)', `${m.grossMarginPercent.toFixed(1)}%`],
       ['ROI (%)', `${m.roiPercent.toFixed(1)}%`]
     ]
       .map((row) => row.join('\t'))
@@ -171,7 +179,7 @@ export function App() {
 
     navigator.clipboard.writeText(tsv);
     setCopiedRenta(true);
-    showToast('Datos RENTA copiados para pegar en Excel');
+    showToast(t.toastRentaCopied);
     setTimeout(() => setCopiedRenta(false), 2500);
   };
 
@@ -210,10 +218,10 @@ export function App() {
     const newOpp: Opportunity = {
       id: `opp-${Date.now()}`,
       code: `OPP-2026-0${opportunities.length + 18}`,
-      title: newOppForm.title || 'Nuevo Desarrollo REHAU',
+      title: newOppForm.title || 'REHAU Custom Profile',
       productCategory: newOppForm.productCategory,
       partImageSvgType: newOppForm.partImageSvgType,
-      clientName: newOppForm.clientName || 'Cliente Industrial',
+      clientName: newOppForm.clientName || 'Industrial Client',
       clientLogoText:
         newOppForm.clientLogoText.toUpperCase() ||
         (newOppForm.clientName ? newOppForm.clientName.slice(0, 3).toUpperCase() : 'CLI'),
@@ -225,7 +233,7 @@ export function App() {
       lastPushMailDate: '2026-11-25',
       nextPushMailDaysLeft: 15,
       quarter: 'Q4 2026',
-      summaryInfo: newOppForm.summaryInfo || 'Especificación técnica cargada en apertura.',
+      summaryInfo: newOppForm.summaryInfo || 'Technical specification loaded.',
       expectedAnnualVolume: vol,
       contractYears: years,
       expectedSalesAmountUsd: salesUsd,
@@ -234,7 +242,7 @@ export function App() {
         viabilityStatus: 'Pendiente',
         superficialEvaluation: '',
         technicalNotes: '',
-        materialFamily: 'RAU-Polímero Técnico',
+        materialFamily: 'RAU-Polymer',
         sapPreProjectRef: `SAP-PRE-${Math.floor(88900 + Math.random() * 500)}`,
         responseDays: 1,
         targetResponseDays: 3
@@ -264,19 +272,19 @@ export function App() {
       cotizacion: {
         quoteNumber: `COT-REHAU-2026-10${opportunities.length + 1}`,
         drawingCode: 'DRW-REHAU-001',
-        moldSteelQuality: 'Acero Bohler M310 / Stavax ESR',
-        guaranteedShots: '500.000 ciclos',
-        leadTimeToolingWeeks: '12 semanas',
-        incoterm: 'DAP Planta Cliente',
-        paymentTerms: '45 días FF',
+        moldSteelQuality: 'Bohler M310 / Stavax ESR',
+        guaranteedShots: '500,000 cycles',
+        leadTimeToolingWeeks: '12 weeks',
+        incoterm: 'DAP Customer Plant',
+        paymentTerms: '45 days net',
         validityDays: 30,
-        processDataSummary: 'Extrusión / Co-extrusión con control láser.',
+        processDataSummary: 'Extrusion / Co-extrusion with laser control.',
         responseDaysPostStage4: 1,
         targetResponseDays: 2
       },
       customerDecision: {
         status: 'En Evaluación Cliente',
-        clientFeedback: 'En curso.'
+        clientFeedback: 'In progress.'
       },
       controlling: {
         evaluationStatus: 'Pendiente Win',
@@ -284,8 +292,8 @@ export function App() {
         approvedBonusUsd: Math.round(salesUsd * 0.018),
         financeDeliverableRef: 'FIN-CTRL-PEND',
         hrPayrollPeriod: 'Q1 2027',
-        controllingAuditor: 'Cra. Valeria Sosa',
-        notes: 'Pendiente cierre.'
+        controllingAuditor: 'Valeria Sosa',
+        notes: 'Pending closing.'
       },
       actions: [
         {
@@ -295,7 +303,7 @@ export function App() {
           department: 'SALES Department',
           stageId: 1,
           actionType: 'Seguimiento',
-          description: 'Oportunidad creada.',
+          description: lang === 'es' ? 'Oportunidad creada.' : 'Opportunity created.',
           completed: true
         }
       ]
@@ -303,7 +311,7 @@ export function App() {
 
     setOpportunities((prev) => [newOpp, ...prev]);
     newOppDialogRef.current?.close();
-    showToast(`Oportunidad ${newOpp.code} creada`);
+    showToast(`${t.toastOppCreated} ${newOpp.code}`);
   };
 
   const totalPipelineUsd = opportunities.reduce((acc, o) => acc + o.expectedSalesAmountUsd, 0);
@@ -326,7 +334,7 @@ export function App() {
             <div className="h-5 w-px bg-slate-200" />
             <div className="flex items-center gap-2.5">
               <span className="text-sm font-bold text-[#3B3D3F] tracking-tight">
-                CRM Pipeline
+                {t.crmPipeline}
               </span>
               <span className="hidden sm:inline-block text-[11px] font-semibold text-[#00856B] bg-[#00A887]/10 px-2 py-0.5 rounded-md">
                 CIRCA + RENTA
@@ -334,7 +342,7 @@ export function App() {
             </div>
           </div>
 
-          {/* Search, Filter & New Button */}
+          {/* Search, Filter, Language Switcher & New Button */}
           <div className="flex items-center gap-2.5">
             <search className="hidden md:flex items-center gap-2">
               <div className="relative">
@@ -343,41 +351,72 @@ export function App() {
                   type="search"
                   id="kanban-search"
                   name="kanban-search"
-                  aria-label="Buscar proyecto o cliente"
-                  placeholder="Buscar cliente o proyecto..."
+                  aria-label={t.searchPlaceholder}
+                  placeholder={t.searchPlaceholder}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   autoCorrect="off"
                   autoCapitalize="none"
                   spellCheck={false}
-                  className="w-56 pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-[#E20074] focus:bg-white transition-all"
+                  className="w-52 pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:border-[#E20074] focus:bg-white transition-all"
                 />
               </div>
 
               <select
-                aria-label="Filtrar por área"
+                aria-label={t.allAreas}
                 value={activeDeptFilter}
                 onChange={(e) => setActiveDeptFilter(e.target.value as Department | 'ALL')}
                 className="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-600 focus:outline-none focus:border-[#00A887]"
               >
-                <option value="ALL">Todas las áreas</option>
-                <option value="SALES Department">Sales</option>
-                <option value="Ingeniería">Ingeniería</option>
-                <option value="Customers">Customers</option>
-                <option value="Controlling">Controlling</option>
+                <option value="ALL">{t.allAreas}</option>
+                <option value="SALES Department">{t.salesArea}</option>
+                <option value="Ingeniería">{t.engineeringArea}</option>
+                <option value="Customers">{t.customersArea}</option>
+                <option value="Controlling">{t.controllingArea}</option>
               </select>
             </search>
 
             <div className="hidden lg:flex items-center gap-4 px-3 py-1 rounded-lg bg-slate-50 border border-slate-200/70 text-xs">
               <div>
-                <span className="text-slate-400">Casos:</span>{' '}
+                <span className="text-slate-400">{t.casesLabel}</span>{' '}
                 <strong className="text-slate-800">{opportunities.length}</strong>
               </div>
               <div className="h-3 w-px bg-slate-200" />
               <div>
-                <span className="text-slate-400">Pipeline:</span>{' '}
+                <span className="text-slate-400">{t.pipelineLabel}</span>{' '}
                 <strong className="text-slate-800">USD {(totalPipelineUsd / 1e6).toFixed(2)}M</strong>
               </div>
+            </div>
+
+            {/* Clean ES / EN Language Toggle */}
+            <div
+              role="group"
+              aria-label="Language selector"
+              className="inline-flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/80 text-[11px] font-bold"
+            >
+              <Globe className="w-3.5 h-3.5 text-slate-400 ml-1.5 mr-1 hidden sm:block" />
+              <button
+                type="button"
+                onClick={() => setLang('es')}
+                className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
+                  lang === 'es'
+                    ? 'bg-white text-[#E20074] shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                ES
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang('en')}
+                className={`px-2 py-1 rounded-md transition-all cursor-pointer ${
+                  lang === 'en'
+                    ? 'bg-white text-[#00856B] shadow-2xs'
+                    : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                EN
+              </button>
             </div>
 
             <button
@@ -386,7 +425,7 @@ export function App() {
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold text-white bg-[#E20074] hover:bg-[#c80066] transition-all shadow-2xs cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
-              <span>Nueva Oportunidad</span>
+              <span>{t.newOpportunityBtn}</span>
             </button>
           </div>
         </div>
@@ -454,10 +493,12 @@ export function App() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5">
                         <span className="text-[11px] font-bold text-slate-400">{stage.id}.</span>
-                        <h2 className="text-xs font-bold text-slate-800 truncate">{stage.name}</h2>
+                        <h2 className="text-xs font-bold text-slate-800 truncate">
+                          {STAGE_NAMES[lang][stage.id]}
+                        </h2>
                       </div>
                       <span className="text-[10px] font-medium text-slate-400 block mt-0.5">
-                        {stage.department}
+                        {DEPT_NAMES[lang][stage.department]}
                       </span>
                     </div>
                     <span
@@ -527,13 +568,17 @@ export function App() {
                         {/* Financial Pills */}
                         <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-100 text-[11px]">
                           <div className="bg-slate-50 rounded-lg px-2 py-1">
-                            <span className="text-[9px] text-slate-400 uppercase block">Venta/año</span>
+                            <span className="text-[9px] text-slate-400 uppercase block">
+                              {t.salesPerYear}
+                            </span>
                             <strong className="text-slate-800">
                               ${(opp.expectedSalesAmountUsd / 1000).toFixed(0)}k
                             </strong>
                           </div>
                           <div className="bg-slate-50 rounded-lg px-2 py-1">
-                            <span className="text-[9px] text-slate-400 uppercase block">CAPEX / ROI</span>
+                            <span className="text-[9px] text-slate-400 uppercase block">
+                              {t.capexRoi}
+                            </span>
                             <strong className="text-[#00856B]">
                               ${(renta.totalCapex / 1000).toFixed(0)}k
                             </strong>{' '}
@@ -541,11 +586,11 @@ export function App() {
                           </div>
                         </div>
 
-                        {/* Card Footer: Owner, Push 15d & Quick stage arrows */}
+                        {/* Card Footer: Push 15d & Quick stage arrows */}
                         <div className="flex items-center justify-between pt-1 text-[10px] text-slate-400">
                           <span className="inline-flex items-center gap-1 text-slate-500 font-medium">
                             <Mail className="w-3 h-3 text-[#00A887]" />
-                            Push {opp.nextPushMailDaysLeft}d
+                            {t.pushLabel} {opp.nextPushMailDaysLeft}d
                           </span>
 
                           <div
@@ -555,7 +600,7 @@ export function App() {
                             {opp.currentStage > 1 && (
                               <button
                                 type="button"
-                                title="Mover a etapa anterior"
+                                title={t.prevStageTitle}
                                 onClick={() =>
                                   moveOppToStage(opp.id, (opp.currentStage - 1) as StageId)
                                 }
@@ -567,7 +612,7 @@ export function App() {
                             {opp.currentStage < 7 && (
                               <button
                                 type="button"
-                                title="Avanzar a siguiente etapa"
+                                title={t.nextStageTitle}
                                 onClick={() =>
                                   moveOppToStage(opp.id, (opp.currentStage + 1) as StageId)
                                 }
@@ -584,7 +629,7 @@ export function App() {
 
                   {stageOpps.length === 0 && (
                     <div className="h-28 rounded-xl border border-dashed border-slate-200 flex items-center justify-center text-[11px] text-slate-400">
-                      Sin casos en esta etapa
+                      {t.noCasesInStage}
                     </div>
                   )}
                 </div>
@@ -619,8 +664,8 @@ export function App() {
                       {selectedOpp.code}
                     </span>
                     <span className="text-xs font-bold text-[#E20074] bg-[#E20074]/10 px-2 py-0.5 rounded">
-                      Etapa {selectedOpp.currentStage}:{' '}
-                      {KANBAN_STAGES.find((s) => s.id === selectedOpp.currentStage)?.name}
+                      {t.stageWord} {selectedOpp.currentStage}:{' '}
+                      {STAGE_NAMES[lang][selectedOpp.currentStage]}
                     </span>
                   </div>
                   <h1 id="opp-detail-title" className="text-base sm:text-lg font-extrabold text-slate-900 mt-0.5">
@@ -638,14 +683,14 @@ export function App() {
                     }
                     className="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-[#00A887] hover:bg-[#008f73] flex items-center gap-1 cursor-pointer"
                   >
-                    <span>Avanzar Etapa</span>
+                    <span>{t.advanceStageBtn}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 )}
                 <button
                   type="button"
                   onClick={() => detailDialogRef.current?.close()}
-                  aria-label="Cerrar detalle"
+                  aria-label={t.closeDetailAria}
                   className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
@@ -670,7 +715,7 @@ export function App() {
                     }`}
                   >
                     <span>
-                      {st.id}. {st.name}
+                      {st.id}. {STAGE_NAMES[lang][st.id]}
                     </span>
                     {isCurrent && <span className="w-1.5 h-1.5 rounded-full bg-[#00A887]" />}
                   </button>
@@ -691,34 +736,34 @@ export function App() {
                   </div>
                   <div className="grid grid-cols-2 gap-3 content-start">
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                      <span className="text-slate-400 block">Venta Anual Esperada</span>
+                      <span className="text-slate-400 block">{t.expectedAnnualSales}</span>
                       <strong className="text-base text-slate-900">
                         USD {selectedOpp.expectedSalesAmountUsd.toLocaleString()}
                       </strong>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                      <span className="text-slate-400 block">Inversión Estimada</span>
+                      <span className="text-slate-400 block">{t.estimatedInvestment}</span>
                       <strong className="text-base text-[#00856B]">
                         USD {selectedOpp.estimatedInvestmentUsd.toLocaleString()}
                       </strong>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                      <span className="text-slate-400 block">Volumen Anual</span>
+                      <span className="text-slate-400 block">{t.annualVolume}</span>
                       <strong className="text-sm text-slate-800">
-                        {selectedOpp.expectedAnnualVolume.toLocaleString()} u/año
+                        {selectedOpp.expectedAnnualVolume.toLocaleString()} {t.unitsPerYear}
                       </strong>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-                      <span className="text-slate-400 block">Responsable Ventas</span>
+                      <span className="text-slate-400 block">{t.salesOwner}</span>
                       <strong className="text-sm text-slate-800">{selectedOpp.salesOwner}</strong>
                     </div>
                     <div className="col-span-2 p-3 rounded-xl bg-[#E20074]/[0.04] border border-[#E20074]/20 flex items-center justify-between">
                       <div>
                         <span className="font-bold text-slate-800 block">
-                          Push Mail Quincenal (15 días)
+                          {t.biweeklyPushMail}
                         </span>
                         <span className="text-slate-500">
-                          Último: {selectedOpp.lastPushMailDate} • Próximo en {selectedOpp.nextPushMailDaysLeft}d
+                          {t.lastPush} {selectedOpp.lastPushMailDate} • {t.nextPushIn} {selectedOpp.nextPushMailDaysLeft}d
                         </span>
                       </div>
                       <button
@@ -729,11 +774,11 @@ export function App() {
                             lastPushMailDate: '2026-11-25',
                             nextPushMailDaysLeft: 15
                           }));
-                          showToast('Recordatorio Push 15d enviado');
+                          showToast(t.toastPushSent);
                         }}
                         className="px-3 py-1.5 rounded-lg font-bold text-white bg-[#E20074] hover:bg-[#c80066] cursor-pointer"
                       >
-                        Enviar Push
+                        {t.sendPushBtn}
                       </button>
                     </div>
                   </div>
@@ -745,9 +790,9 @@ export function App() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-3 gap-3">
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-slate-400 block">Viabilidad Ingeniería</span>
+                      <span className="text-slate-400 block">{t.engineeringViability}</span>
                       <select
-                        aria-label="Viabilidad"
+                        aria-label={t.engineeringViability}
                         value={selectedOpp.preCirca.viabilityStatus}
                         onChange={(e) =>
                           updateOppById(selectedOpp.id, (o) => ({
@@ -760,28 +805,28 @@ export function App() {
                         }
                         className="mt-1 w-full font-bold text-slate-900 bg-white border border-slate-300 rounded-lg px-2 py-1.5"
                       >
-                        <option value="Pendiente">Pendiente</option>
-                        <option value="Viable">Viable</option>
-                        <option value="Viable con Observaciones">Viable con Observaciones</option>
-                        <option value="No Viable">No Viable</option>
+                        <option value="Pendiente">{t.viabilityPending}</option>
+                        <option value="Viable">{t.viabilityViable}</option>
+                        <option value="Viable con Observaciones">{t.viabilityObservations}</option>
+                        <option value="No Viable">{t.viabilityNotViable}</option>
                       </select>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-slate-400 block">Ref. SAP Pre-Proyecto</span>
+                      <span className="text-slate-400 block">{t.sapPreProjectRef}</span>
                       <strong className="text-sm font-mono text-slate-900 mt-1 block">
                         {selectedOpp.preCirca.sapPreProjectRef}
                       </strong>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-slate-400 block">Time to Market</span>
+                      <span className="text-slate-400 block">{t.timeToMarket}</span>
                       <strong className="text-sm text-[#00856B] mt-1 block">
-                        {selectedOpp.preCirca.responseDays} días (Meta ≤ {selectedOpp.preCirca.targetResponseDays}d)
+                        {selectedOpp.preCirca.responseDays} {t.daysWord} ({t.targetLabel} ≤ {selectedOpp.preCirca.targetResponseDays}d)
                       </strong>
                     </div>
                   </div>
                   <div>
                     <label htmlFor="modal-precirca-notes" className="font-bold text-slate-700 block mb-1">
-                      Evaluación de Viabilidad (Ingeniería)
+                      {t.viabilityEvalLabel}
                     </label>
                     <textarea
                       id="modal-precirca-notes"
@@ -808,24 +853,24 @@ export function App() {
                       <div>
                         <span className="font-bold text-[#4EB99F]">SAP CIRCA: {selectedOpp.circa.sapCircaCode}</span>
                         <span className="block text-[11px] text-slate-300">
-                          Planta: {selectedOpp.circa.plantLocation} • Ciclo: {selectedOpp.circa.cycleTimeSeconds}s
+                          {t.plantLabel} {selectedOpp.circa.plantLocation} • {t.cycleLabel} {selectedOpp.circa.cycleTimeSeconds}s
                         </span>
                       </div>
                     </div>
                     <button
                       type="button"
-                      onClick={() => showToast(`Datos sincronizados con SAP (${selectedOpp.circa.sapCircaCode})`)}
+                      onClick={() => showToast(`${t.toastSapSynced} (${selectedOpp.circa.sapCircaCode})`)}
                       className="px-3 py-1.5 rounded-lg font-bold bg-[#00A887] text-white flex items-center gap-1.5 cursor-pointer"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
-                      <span>Sync SAP</span>
+                      <span>{t.syncSapBtn}</span>
                     </button>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div className="p-3 rounded-xl border border-slate-200">
                       <label htmlFor="m-tp" className="text-slate-500 block">
-                        Costo Producción (Transfer Price USD/u)
+                        {t.productionCostLabel}
                       </label>
                       <input
                         id="m-tp"
@@ -843,7 +888,7 @@ export function App() {
                     </div>
                     <div className="p-3 rounded-xl border border-slate-200">
                       <label htmlFor="m-mat" className="text-slate-500 block">
-                        Inversión Matriz (USD)
+                        {t.toolingInvestmentLabel}
                       </label>
                       <input
                         id="m-mat"
@@ -861,7 +906,7 @@ export function App() {
                     </div>
                     <div className="p-3 rounded-xl border border-slate-200">
                       <label htmlFor="m-maq" className="text-slate-500 block">
-                        Inversión Maquinaria (USD)
+                        {t.machineryInvestmentLabel}
                       </label>
                       <input
                         id="m-maq"
@@ -886,10 +931,10 @@ export function App() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200">
                     <div>
-                      <span className="font-bold text-slate-800">Cálculo Automático RENTA</span>
+                      <span className="font-bold text-slate-800">{t.autoRentaCalcTitle}</span>
                       <span className="block text-slate-500">
-                        Toma Transfer Price (USD {selectedRenta.transferPrice.toFixed(2)}) + CAPEX (USD{' '}
-                        {selectedRenta.totalCapex.toLocaleString()}) de CIRCA
+                        {t.autoRentaCalcSub}: USD {selectedRenta.transferPrice.toFixed(2)}/u • CAPEX USD{' '}
+                        {selectedRenta.totalCapex.toLocaleString()}
                       </span>
                     </div>
                     <button
@@ -898,14 +943,14 @@ export function App() {
                       className="px-3 py-1.5 rounded-lg font-bold text-[#E20074] bg-white border border-[#E20074]/30 hover:bg-[#E20074] hover:text-white transition-all flex items-center gap-1.5 cursor-pointer"
                     >
                       {copiedRenta ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                      <span>{copiedRenta ? 'Copiado' : 'Copiar para Excel RENTA'}</span>
+                      <span>{copiedRenta ? t.copiedBtn : t.copyForRentaExcelBtn}</span>
                     </button>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3 rounded-xl border border-slate-200">
                       <label htmlFor="m-sell" className="text-slate-500 block">
-                        Precio de Venta Unitario (USD)
+                        {t.unitSellingPriceLabel}
                       </label>
                       <input
                         id="m-sell"
@@ -926,7 +971,7 @@ export function App() {
                     </div>
                     <div className="p-3 rounded-xl border border-slate-200">
                       <label htmlFor="m-qty" className="text-slate-500 block">
-                        Volumen Anual (Unidades)
+                        {t.annualQtyLabel}
                       </label>
                       <input
                         id="m-qty"
@@ -949,27 +994,27 @@ export function App() {
 
                   <div className="grid grid-cols-4 gap-2.5">
                     <div className="p-3 rounded-xl bg-slate-900 text-white">
-                      <span className="text-[10px] text-slate-400 uppercase block">ROI Proyecto</span>
+                      <span className="text-[10px] text-slate-400 uppercase block">{t.projectRoi}</span>
                       <strong className="text-base text-[#4EB99F]">
                         {selectedRenta.roiPercent.toFixed(1)}%
                       </strong>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-400 uppercase block">Margen Bruto</span>
+                      <span className="text-[10px] text-slate-400 uppercase block">{t.grossMargin}</span>
                       <strong className="text-base text-slate-900">
                         {selectedRenta.grossMarginPercent.toFixed(1)}%
                       </strong>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-400 uppercase block">Venta Anual</span>
+                      <span className="text-[10px] text-slate-400 uppercase block">{t.annualSales}</span>
                       <strong className="text-base text-slate-900">
                         ${(selectedRenta.annualRevenueUsd / 1000).toFixed(0)}k
                       </strong>
                     </div>
                     <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] text-slate-400 uppercase block">Payback</span>
+                      <span className="text-[10px] text-slate-400 uppercase block">{t.payback}</span>
                       <strong className="text-base text-[#E20074]">
-                        {selectedRenta.paybackMonths.toFixed(1)} m
+                        {selectedRenta.paybackMonths.toFixed(1)} {t.monthsShort}
                       </strong>
                     </div>
                   </div>
@@ -982,10 +1027,10 @@ export function App() {
                   <div className="flex items-center justify-between p-3.5 rounded-xl bg-slate-50 border border-slate-200">
                     <div>
                       <strong className="text-slate-900 block">
-                        {selectedOpp.cotizacion.quoteNumber} • Plano {selectedOpp.cotizacion.drawingCode}
+                        {selectedOpp.cotizacion.quoteNumber} • {t.drawingWord} {selectedOpp.cotizacion.drawingCode}
                       </strong>
                       <span className="text-slate-500">
-                        Matriz: {selectedOpp.cotizacion.moldSteelQuality}
+                        {t.toolingWord} {selectedOpp.cotizacion.moldSteelQuality}
                       </span>
                     </div>
                     <button
@@ -994,7 +1039,7 @@ export function App() {
                       className="px-3.5 py-2 rounded-xl font-bold text-white bg-[#E20074] hover:bg-[#c80066] flex items-center gap-1.5 cursor-pointer"
                     >
                       <FileText className="w-3.5 h-3.5" />
-                      <span>Ver Cotización Cliente</span>
+                      <span>{t.viewClientQuoteBtn}</span>
                     </button>
                   </div>
                 </div>
@@ -1004,9 +1049,9 @@ export function App() {
               {activeModalTab === 6 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-slate-400 block mb-1">Respuesta del Cliente</span>
+                    <span className="text-slate-400 block mb-1">{t.clientResponseLabel}</span>
                     <select
-                      aria-label="Respuesta del cliente"
+                      aria-label={t.clientResponseLabel}
                       value={selectedOpp.customerDecision.status}
                       onChange={(e) =>
                         updateOppById(selectedOpp.id, (o) => ({
@@ -1019,13 +1064,13 @@ export function App() {
                       }
                       className="w-full font-bold bg-white border border-slate-300 rounded-lg px-3 py-2"
                     >
-                      <option value="En Evaluación Cliente">En Evaluación Cliente</option>
-                      <option value="YES (Ganada)">YES (Ganada)</option>
-                      <option value="NO (Perdida)">NO (Perdida)</option>
+                      <option value="En Evaluación Cliente">{t.statusEvaluating}</option>
+                      <option value="YES (Ganada)">{t.statusWon}</option>
+                      <option value="NO (Perdida)">{t.statusLost}</option>
                     </select>
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-slate-400 block mb-1">Comentarios / Feedback</span>
+                    <span className="text-slate-400 block mb-1">{t.commentsFeedbackLabel}</span>
                     <p className="font-medium text-slate-800">{selectedOpp.customerDecision.clientFeedback}</p>
                   </div>
                 </div>
@@ -1035,19 +1080,21 @@ export function App() {
               {activeModalTab === 7 && (
                 <div className="grid grid-cols-3 gap-3">
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-slate-400 block">Estado Controlling</span>
+                    <span className="text-slate-400 block">{t.controllingStatusLabel}</span>
                     <strong className="text-sm text-[#00856B] mt-1 block">
                       {selectedOpp.controlling.evaluationStatus}
                     </strong>
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-slate-400 block">Comisión ({selectedOpp.controlling.commissionRatePercent}%)</span>
+                    <span className="text-slate-400 block">
+                      {t.commissionLabel} ({selectedOpp.controlling.commissionRatePercent}%)
+                    </span>
                     <strong className="text-sm text-[#E20074] mt-1 block">
                       USD {selectedOpp.controlling.approvedBonusUsd.toLocaleString()}
                     </strong>
                   </div>
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                    <span className="text-slate-400 block">Legajo HR / Finanzas</span>
+                    <span className="text-slate-400 block">{t.hrFinanceFileLabel}</span>
                     <strong className="text-sm font-mono text-slate-900 mt-1 block">
                       {selectedOpp.controlling.financeDeliverableRef}
                     </strong>
@@ -1058,12 +1105,12 @@ export function App() {
               {/* Seguimiento / Acciones del Caso */}
               <div className="pt-4 border-t border-slate-200 space-y-3">
                 <h4 className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">
-                  Acciones y Seguimiento del Proyecto
+                  {t.projectActionsTitle}
                 </h4>
                 <form onSubmit={handleAddAction} className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="Registrar nueva acción o nota de seguimiento..."
+                    placeholder={t.addActionPlaceholder}
                     value={newActionText}
                     onChange={(e) => setNewActionText(e.target.value)}
                     className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 focus:bg-white focus:border-[#E20074] focus:outline-none"
@@ -1072,7 +1119,7 @@ export function App() {
                     type="submit"
                     className="px-3 py-1.5 rounded-lg font-bold text-white bg-[#3B3D3F] hover:bg-slate-800 cursor-pointer"
                   >
-                    Agregar
+                    {t.addBtn}
                   </button>
                 </form>
                 <div className="space-y-1.5">
@@ -1103,12 +1150,12 @@ export function App() {
       >
         <div className="p-4 border-b border-slate-200 flex items-center justify-between">
           <h1 id="new-opp-dialog-title" className="text-sm font-extrabold text-slate-900">
-            Nueva Oportunidad Comercial
+            {t.newOppModalTitle}
           </h1>
           <button
             type="button"
             onClick={() => newOppDialogRef.current?.close()}
-            aria-label="Cerrar ventana"
+            aria-label={t.closeDetailAria}
             className="p-1 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -1119,14 +1166,14 @@ export function App() {
           <div className="grid grid-cols-3 gap-2.5">
             <div className="col-span-2">
               <label htmlFor="opp-client" className="block font-bold text-slate-700 mb-1">
-                Cliente *
+                {t.clientField}
               </label>
               <input
                 id="opp-client"
                 type="text"
                 required
                 autoFocus
-                placeholder="Ej. Toyota Argentina"
+                placeholder={t.clientPlaceholder}
                 value={newOppForm.clientName}
                 onChange={(e) => setNewOppForm({ ...newOppForm, clientName: e.target.value })}
                 className="w-full rounded-lg border border-slate-300 px-3 py-1.5"
@@ -1134,7 +1181,7 @@ export function App() {
             </div>
             <div>
               <label htmlFor="opp-logo-text" className="block font-bold text-slate-700 mb-1">
-                Sigla *
+                {t.acronymField}
               </label>
               <input
                 id="opp-logo-text"
@@ -1151,13 +1198,13 @@ export function App() {
 
           <div>
             <label htmlFor="opp-title" className="block font-bold text-slate-700 mb-1">
-              Proyecto / Pieza *
+              {t.projectPartField}
             </label>
             <input
               id="opp-title"
               type="text"
               required
-              placeholder="Ej. Perfil Co-Extruido RAU-PP"
+              placeholder={t.projectPartPlaceholder}
               value={newOppForm.title}
               onChange={(e) => setNewOppForm({ ...newOppForm, title: e.target.value })}
               className="w-full rounded-lg border border-slate-300 px-3 py-1.5"
@@ -1167,7 +1214,7 @@ export function App() {
           <div className="grid grid-cols-2 gap-2.5">
             <div>
               <label htmlFor="opp-sales-usd" className="block font-bold text-slate-700 mb-1">
-                Venta Anual Esperada (USD) *
+                {t.expectedSalesField}
               </label>
               <input
                 id="opp-sales-usd"
@@ -1180,7 +1227,7 @@ export function App() {
             </div>
             <div>
               <label htmlFor="opp-inv-usd" className="block font-bold text-slate-700 mb-1">
-                Inversión Estimada (USD) *
+                {t.estimatedInvField}
               </label>
               <input
                 id="opp-inv-usd"
@@ -1195,7 +1242,7 @@ export function App() {
 
           <div>
             <label htmlFor="opp-summary" className="block font-bold text-slate-700 mb-1">
-              Resumen Técnico *
+              {t.techSummaryField}
             </label>
             <textarea
               id="opp-summary"
@@ -1213,13 +1260,13 @@ export function App() {
               onClick={() => newOppDialogRef.current?.close()}
               className="px-3 py-1.5 rounded-lg font-semibold text-slate-600 hover:bg-slate-100 cursor-pointer"
             >
-              Cancelar
+              {t.cancelBtn}
             </button>
             <button
               type="submit"
               className="px-3.5 py-1.5 rounded-lg font-bold text-white bg-[#E20074] hover:bg-[#c80066] cursor-pointer"
             >
-              Crear Caso
+              {t.createCaseBtn}
             </button>
           </div>
         </form>
@@ -1240,7 +1287,7 @@ export function App() {
                   <img src="/rehau-logo-cropped.png" alt="REHAU" className="h-8 w-auto" />
                   <div>
                     <span className="text-[10px] font-bold uppercase text-[#E20074]">
-                      Cotización Comercial
+                      {t.commercialQuoteTag}
                     </span>
                     <h1 id="quote-preview-title" className="text-base font-extrabold text-slate-900">
                       {selectedOpp.cotizacion.quoteNumber} — {selectedOpp.clientName}
@@ -1254,12 +1301,12 @@ export function App() {
                     className="px-2.5 py-1.5 rounded-lg font-bold bg-slate-100 text-slate-700 flex items-center gap-1 cursor-pointer"
                   >
                     <Printer className="w-3.5 h-3.5" />
-                    <span>Imprimir</span>
+                    <span>{t.printBtn}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => quotePreviewDialogRef.current?.close()}
-                    aria-label="Cerrar"
+                    aria-label={t.closeDetailAria}
                     className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 cursor-pointer"
                   >
                     <X className="w-4 h-4" />
@@ -1271,21 +1318,23 @@ export function App() {
                 <PartBlueprintSvg type={selectedOpp.partImageSvgType} className="w-full h-32" />
                 <div className="p-3.5 rounded-xl bg-slate-900 text-white space-y-1.5">
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Precio Unitario:</span>
+                    <span className="text-slate-400">{t.unitPriceLabel}</span>
                     <strong className="text-[#4EB99F]">
                       USD {selectedRenta.sellingPrice.toFixed(2)} / u
                     </strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Volumen Anual:</span>
-                    <strong>{selectedRenta.annualQty.toLocaleString()} u/año</strong>
+                    <span className="text-slate-400">{t.annualVolLabel}</span>
+                    <strong>
+                      {selectedRenta.annualQty.toLocaleString()} {t.unitsPerYear}
+                    </strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Matriz / Herramental:</span>
+                    <span className="text-slate-400">{t.toolingHeaderLabel}</span>
                     <strong>USD {selectedOpp.circa.toolingMatrixCostUsd.toLocaleString()}</strong>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-400">Plano:</span>
+                    <span className="text-slate-400">{t.drawingHeaderLabel}</span>
                     <strong className="font-mono">{selectedOpp.cotizacion.drawingCode}</strong>
                   </div>
                 </div>
@@ -1293,13 +1342,13 @@ export function App() {
 
               <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                 <p>
-                  <strong>Calidad de Matriz:</strong> {selectedOpp.cotizacion.moldSteelQuality} ({selectedOpp.cotizacion.guaranteedShots})
+                  <strong>{t.moldQualityLabel}</strong> {selectedOpp.cotizacion.moldSteelQuality} ({selectedOpp.cotizacion.guaranteedShots})
                 </p>
                 <p>
-                  <strong>Proceso:</strong> {selectedOpp.cotizacion.processDataSummary}
+                  <strong>{t.processLabel}</strong> {selectedOpp.cotizacion.processDataSummary}
                 </p>
                 <p>
-                  <strong>Entrega y Pago:</strong> {selectedOpp.cotizacion.incoterm} • {selectedOpp.cotizacion.paymentTerms}
+                  <strong>{t.deliveryPaymentLabel}</strong> {selectedOpp.cotizacion.incoterm} • {selectedOpp.cotizacion.paymentTerms}
                 </p>
               </div>
             </div>
