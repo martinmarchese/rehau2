@@ -235,29 +235,29 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
   {
     id: 'opp-vw-amarok',
     code: 'OPP-2026-014',
-    title: 'Perfil Sellado Co-Extruido EPDM + PP — Proyecto Pickup NextGen',
-    productCategory: 'Automotive Exterior Profiles',
+    title: 'Perfil Sellado Co-Extruido EPDM + PP',
+    productCategory: 'Automotive Exterior',
     partImageSvgType: 'automotive-bumper',
     clientName: 'Volkswagen Argentina',
     clientLogoText: 'VW',
     clientColor: '#001E50',
-    salesOwner: 'Martín K. (Key Account Automotive)',
+    salesOwner: 'Martín K.',
     engineeringOwner: 'Ing. Lucas Fernández',
-    currentStage: 5,
+    currentStage: 4,
     createdAt: '2026-10-14',
     lastPushMailDate: '2026-11-22',
     nextPushMailDaysLeft: 12,
     quarter: 'Q4 2026',
-    summaryInfo: 'Desarrollo y provisión local de burlete co-extruido de alta estanqueidad con labio floculado y punteras inyectadas para cabina doble en Planta Pacheco.',
+    summaryInfo: 'Burlete co-extruido con labio floculado para cabina doble en Planta Pacheco.',
     expectedAnnualVolume: 95000,
     contractYears: 5,
     expectedSalesAmountUsd: 1377500,
     estimatedInvestmentUsd: 168000,
     preCirca: {
       viabilityStatus: 'Viable',
-      superficialEvaluation: 'Factible en línea de co-extrusión L4 (Planta Pilar). Requiere cabezal tri-capa nuevo y dispositivo de corte láser en línea.',
-      technicalNotes: 'Compuesto RAU-EPDM 70 Shore A homologado bajo norma VW TL 52641. Capacidad disponible en turno 2.',
-      materialFamily: 'RAU-EPDM 247 + RAU-PP 118 (Co-extrusión)',
+      superficialEvaluation: 'Factible en línea L4 (Planta Pilar). Requiere cabezal tri-capa nuevo.',
+      technicalNotes: 'Compuesto RAU-EPDM 70 Shore A bajo norma VW TL 52641.',
+      materialFamily: 'RAU-EPDM 247 + RAU-PP 118',
       sapPreProjectRef: 'SAP-PRE-88412',
       responseDays: 2,
       targetResponseDays: 3,
@@ -273,7 +273,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
       cavityCount: 2,
       scrapRatePercent: 2.8,
       lineCapacityUnitsPerHour: 380,
-      plantLocation: 'Planta Industrial REHAU Pilar (BA)',
+      plantLocation: 'Planta Pilar (BA)',
       responseDays: 4,
       targetResponseDays: 5,
       completedAt: '2026-10-20'
@@ -289,22 +289,22 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
     },
     cotizacion: {
       quoteNumber: 'COT-REHAU-2026-089',
-      drawingCode: 'DRW-VW-2H6-837-431-REV04',
-      moldSteelQuality: 'Acero Bohler M310 ISOPLAST templado al vacío (52 HRC) con recubrimiento PVD TiN',
-      guaranteedShots: '500.000 ciclos / 1.500.000 metros lineales garantizados',
-      leadTimeToolingWeeks: '14 semanas (T0 muestras EMPB) + 4 semanas PPAP Nivel 3',
-      incoterm: 'DAP Planta Gral. Pacheco (Buenos Aires)',
-      paymentTerms: '60 días fecha factura / Herramental amortizado en pieza',
+      drawingCode: 'DRW-VW-2H6-837-431',
+      moldSteelQuality: 'Acero Bohler M310 ISOPLAST (52 HRC) con recubrimiento TiN',
+      guaranteedShots: '500.000 ciclos',
+      leadTimeToolingWeeks: '14 semanas',
+      incoterm: 'DAP Planta Pacheco',
+      paymentTerms: '60 días FF',
       validityDays: 30,
-      processDataSummary: 'Co-extrusión continua 18 m/min con vulcanizado IR + aplicación automática de flock electrostático y control dimensional por visión láser.',
+      processDataSummary: 'Co-extrusión continua 18 m/min + flock electrostático y visión láser.',
       responseDaysPostStage4: 2,
       targetResponseDays: 2,
       sentToClientAt: '2026-10-23'
     },
     customerDecision: {
       status: 'En Evaluación Cliente',
-      clientFeedback: 'Compras Regionales VW aprobó la etapa técnica. Revisión final de mesa de compras programada para cierre de mes.',
-      competitorBenchmark: 'Hutchinson / Cooper Standard (+7% más caros en herramental)'
+      clientFeedback: 'Etapa técnica aprobada. En revisión final de compras regionales.',
+      competitorBenchmark: 'Hutchinson (+7% en herramental)'
     },
     controlling: {
       evaluationStatus: 'Pendiente Win',
@@ -313,7 +313,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
       financeDeliverableRef: 'FIN-CTRL-2026-PEND',
       hrPayrollPeriod: 'Diciembre 2026',
       controllingAuditor: 'Cra. Valeria Sosa',
-      notes: 'ROI proyectado supera holgadamente el umbral corporativo REHAU (28%). Listo para activar apenas ingrese OC de cliente.'
+      notes: 'Pendiente cierre comercial.'
     },
     actions: [
       {
@@ -323,7 +323,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
         department: 'SALES Department',
         stageId: 1,
         actionType: 'Seguimiento',
-        description: 'Carga inicial de RFQ Volkswagen con planos 2D/3D STEP y volúmenes anuales SOP 2027.',
+        description: 'Carga de RFQ con planos 3D y volúmenes anuales.',
         completed: true
       },
       {
@@ -333,17 +333,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
         department: 'Ingeniería',
         stageId: 3,
         actionType: 'SAP Sync',
-        description: 'Costeo CIRCA finalizado en SAP CO-PC (#SAP-CIRCA-409182). Transfer Price fijado en USD 9.85/u.',
-        completed: true
-      },
-      {
-        id: 'act-3',
-        date: '2026-11-07',
-        author: 'Sistema Push 15d',
-        department: 'SALES Department',
-        stageId: 5,
-        actionType: 'Push 15 Días',
-        description: 'Mail Push Quincenal enviado y respondido: Cliente confirmó recepción de muestras físicas de perfil.',
+        description: 'Costeo CIRCA cargado desde SAP (#SAP-CIRCA-409182). Transfer Price: USD 9.85/u.',
         completed: true
       },
       {
@@ -351,9 +341,9 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
         date: '2026-11-26',
         author: 'Martín K.',
         department: 'SALES Department',
-        stageId: 5,
+        stageId: 4,
         actionType: 'Cliente',
-        description: 'Reunión presencial con Buyer de Polímeros en VW Pacheco para cierre de nominación.',
+        description: 'Validar precio final RENTA para emitir cotización formal.',
         completed: false
       }
     ]
@@ -361,29 +351,29 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
   {
     id: 'opp-whirlpool-gasket',
     code: 'OPP-2026-009',
-    title: 'Burlete Magnético Antibacterial RAU-PVC — Línea Heladeras No-Frost Export',
-    productCategory: 'Industrial & Appliance Sealing',
+    title: 'Burlete Magnético RAU-PVC No-Frost',
+    productCategory: 'Appliance Sealing',
     partImageSvgType: 'fridge-gasket',
-    clientName: 'Whirlpool Latinoamérica',
+    clientName: 'Whirlpool',
     clientLogoText: 'WHR',
     clientColor: '#D97706',
-    salesOwner: 'Sofía M. (Industrial Solutions)',
+    salesOwner: 'Sofía M.',
     engineeringOwner: 'Ing. Mariano Pereyra',
-    currentStage: 7,
+    currentStage: 6,
     createdAt: '2026-09-18',
     lastPushMailDate: '2026-11-18',
     nextPushMailDaysLeft: 8,
     quarter: 'Q4 2026',
-    summaryInfo: 'Provisión integral de burletes magnéticos soldados por termofusión en 4 esquinas para nueva plataforma de refrigeradores de alta eficiencia energética.',
+    summaryInfo: 'Burletes magnéticos soldados por termofusión para nueva línea de refrigeradores.',
     expectedAnnualVolume: 140000,
     contractYears: 4,
     expectedSalesAmountUsd: 1218000,
     estimatedInvestmentUsd: 92000,
     preCirca: {
       viabilityStatus: 'Viable',
-      superficialEvaluation: '100% compatible con celda de soldadura automática de esquinas y extrusora Battenfeld existente.',
-      technicalNotes: 'Fórmula RAU-PVC libre de ftalatos con aditivo antimicrobiano validado por laboratorio Whirlpool.',
-      materialFamily: 'RAU-PVC 1408 + Banda Magnética Ferrita Anisotrópica',
+      superficialEvaluation: 'Compatible con celda de soldadura automática y extrusora Battenfeld.',
+      technicalNotes: 'Fórmula RAU-PVC antibacterial validada.',
+      materialFamily: 'RAU-PVC 1408 + Ferrita',
       sapPreProjectRef: 'SAP-PRE-87904',
       responseDays: 2,
       targetResponseDays: 3,
@@ -399,7 +389,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
       cavityCount: 1,
       scrapRatePercent: 1.9,
       lineCapacityUnitsPerHour: 240,
-      plantLocation: 'Planta Industrial REHAU Pilar (BA)',
+      plantLocation: 'Planta Pilar (BA)',
       responseDays: 3,
       targetResponseDays: 5,
       completedAt: '2026-09-23'
@@ -415,14 +405,14 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
     },
     cotizacion: {
       quoteNumber: 'COT-REHAU-2026-071',
-      drawingCode: 'DRW-WHR-W11598402-B',
-      moldSteelQuality: 'Hilera de extrusión en Acero Inoxidable Stavax ESR pulido espejo + mordazas de soldadura CNC',
-      guaranteedShots: '600.000 marcos soldados',
-      leadTimeToolingWeeks: '9 semanas para muestras funcionales',
-      incoterm: 'FCA Planta Pilar / Entregas Kanban semanales',
-      paymentTerms: '45 días FF / 50% herramental anticipado con OC',
+      drawingCode: 'DRW-WHR-W11598402',
+      moldSteelQuality: 'Acero Inoxidable Stavax ESR pulido espejo',
+      guaranteedShots: '600.000 marcos',
+      leadTimeToolingWeeks: '9 semanas',
+      incoterm: 'FCA Planta Pilar',
+      paymentTerms: '45 días FF',
       validityDays: 45,
-      processDataSummary: 'Extrusión de perfil multicámara + inserción automática de imán + corte a 45° y termofusión de precisión sin rebaba visible.',
+      processDataSummary: 'Extrusión multicámara + inserción de imán y termofusión a 45°.',
       responseDaysPostStage4: 1,
       targetResponseDays: 2,
       sentToClientAt: '2026-09-25'
@@ -430,9 +420,9 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
     customerDecision: {
       status: 'YES (Ganada)',
       decisionDate: '2026-10-29',
-      clientFeedback: 'Orden de Compra #4500918231 emitida. Cliente destacó velocidad de respuesta Time-to-Market (7 días totales desde RFQ a Cotización) y formato técnico claro.',
-      competitorBenchmark: 'Proveedor importado Brasil (plazo de entrega 6 semanas mayor)',
-      winLossReason: 'Mejor Time-to-Market, calidad de matriz Stavax y propuesta técnico-comercial superior.'
+      clientFeedback: 'OC #4500918231 emitida. Adjudicado por Time-to-Market (7 días) y calidad de matriz.',
+      competitorBenchmark: 'Proveedor Brasil (+6 semanas plazo)',
+      winLossReason: 'Mejor Time-to-Market y propuesta técnica.'
     },
     controlling: {
       evaluationStatus: 'Comisión Aprobada',
@@ -441,7 +431,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
       financeDeliverableRef: 'FIN-HR-2026-0419',
       hrPayrollPeriod: 'Noviembre 2026',
       controllingAuditor: 'Cra. Valeria Sosa',
-      notes: 'Proyecto WIN auditado por Controlling. Margen bruto 32.2% y Payback < 4 meses verificados contra SAP CIRCA. Entregable generado para HR / Finanzas.'
+      notes: 'Margen 32.2% verificado contra SAP CIRCA. Listo para liquidación HR / Finanzas.'
     },
     actions: [
       {
@@ -451,7 +441,7 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
         department: 'Ingeniería',
         stageId: 3,
         actionType: 'SAP Sync',
-        description: 'Sincronización SAP CIRCA completada en 3 días hábiles (2 días por debajo del KPI objetivo).',
+        description: 'Sincronización SAP CIRCA completada (#SAP-CIRCA-408510).',
         completed: true
       },
       {
@@ -461,120 +451,8 @@ export const INITIAL_OPPORTUNITIES: Opportunity[] = [
         department: 'Customers',
         stageId: 6,
         actionType: 'Aprobación',
-        description: 'Cliente adjudicó el proyecto (WIN). OC #4500918231 adjunta al expediente.',
+        description: 'Cliente adjudicó el proyecto (WIN). OC #4500918231 adjunta.',
         completed: true
-      },
-      {
-        id: 'act-w3',
-        date: '2026-11-05',
-        author: 'Cra. Valeria Sosa',
-        department: 'Controlling',
-        stageId: 7,
-        actionType: 'Aprobación',
-        description: 'Liquidación de comisión comercial aprobada y enviada a HR / Finanzas (#FIN-HR-2026-0419).',
-        completed: true
-      }
-    ]
-  },
-  {
-    id: 'opp-syngenta-geno',
-    code: 'OPP-2026-019',
-    title: 'Perfilería PVC RAU-FIPRO con Fibra de Vidrio — Complejo Corporativo Sustentable',
-    productCategory: 'Window Solutions & Facades',
-    partImageSvgType: 'window-profile',
-    clientName: 'Constructora Sudamericana / Torre Catalinas',
-    clientLogoText: 'CSA',
-    clientColor: '#00A887',
-    salesOwner: 'Diego R. (Window Solutions B2B)',
-    engineeringOwner: 'Ing. Lucas Fernández',
-    currentStage: 3,
-    createdAt: '2026-11-12',
-    lastPushMailDate: '2026-11-12',
-    nextPushMailDaysLeft: 2,
-    quarter: 'Q4 2026',
-    summaryInfo: 'Desarrollo de matriz local para perfil acople de fachada acústica certificada LEED Platinum con refuerzo integrado RAU-FIPRO.',
-    expectedAnnualVolume: 62000,
-    contractYears: 3,
-    expectedSalesAmountUsd: 899000,
-    estimatedInvestmentUsd: 115000,
-    preCirca: {
-      viabilityStatus: 'Viable con Observaciones',
-      superficialEvaluation: 'Viable técnicamente. Requiere calibrador de vacío refrigerado de 6 metros y foliado exterior gris antracita.',
-      technicalNotes: 'Verificar disponibilidad de compuesto RAU-FIPRO en planta para lote piloto en enero.',
-      materialFamily: 'RAU-FIPRO (PVC reforzado con fibra de vidrio)',
-      sapPreProjectRef: 'SAP-PRE-88690',
-      responseDays: 3,
-      targetResponseDays: 3,
-      completedAt: '2026-11-15'
-    },
-    circa: {
-      sapCircaCode: 'SAP-CIRCA-409501',
-      sapSynced: true,
-      productionUnitCostUsd: 9.40,
-      toolingMatrixCostUsd: 78000,
-      machineryInvestmentUsd: 37000,
-      cycleTimeSeconds: 30,
-      cavityCount: 1,
-      scrapRatePercent: 3.2,
-      lineCapacityUnitsPerHour: 165,
-      plantLocation: 'Planta Industrial REHAU Pilar (BA)',
-      responseDays: 4,
-      targetResponseDays: 5
-    },
-    renta: {
-      targetSellingPriceUnitUsd: 14.50,
-      annualQuantityUnits: 62000,
-      amortizationType: 'En Precio de Pieza',
-      discountRateWaccPercent: 12.0,
-      responseDaysPostStage3: 1,
-      targetResponseDays: 2
-    },
-    cotizacion: {
-      quoteNumber: 'COT-REHAU-2026-095',
-      drawingCode: 'DRW-WIN-GENEO-76-AR',
-      moldSteelQuality: 'Acero Inoxidable 1.2316 nitrurado para alta resistencia a fibra de vidrio',
-      guaranteedShots: '800.000 metros lineales',
-      leadTimeToolingWeeks: '12 semanas',
-      incoterm: 'DAP Obra Retiro CABA',
-      paymentTerms: '30/60 días FF',
-      validityDays: 30,
-      processDataSummary: 'Co-extrusión con núcleo de fibra de vidrio + foliado en línea Skai Antracita.',
-      responseDaysPostStage4: 1,
-      targetResponseDays: 2
-    },
-    customerDecision: {
-      status: 'En Evaluación Cliente',
-      clientFeedback: 'Aguardando cierre de costeo CIRCA e ingeniería para presentar propuesta formal.'
-    },
-    controlling: {
-      evaluationStatus: 'Pendiente Win',
-      commissionRatePercent: 1.5,
-      approvedBonusUsd: 13485,
-      financeDeliverableRef: 'FIN-CTRL-PEND',
-      hrPayrollPeriod: 'Q1 2027',
-      controllingAuditor: 'Cra. Valeria Sosa',
-      notes: 'En etapa técnica CIRCA.'
-    },
-    actions: [
-      {
-        id: 'act-c1',
-        date: '2026-11-15',
-        author: 'Ing. Lucas Fernández',
-        department: 'Ingeniería',
-        stageId: 2,
-        actionType: 'Aprobación',
-        description: 'Pre-Circa aprobado con observación sobre calibrador de vacío de 6m.',
-        completed: true
-      },
-      {
-        id: 'act-c2',
-        date: '2026-11-27',
-        author: 'Diego R.',
-        department: 'SALES Department',
-        stageId: 3,
-        actionType: 'Push 15 Días',
-        description: 'Próximo Push Mail automático de los 15 días programado: actualizar feedback de estudio de arquitectura.',
-        completed: false
       }
     ]
   }
